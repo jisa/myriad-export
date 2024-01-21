@@ -31,6 +31,14 @@ if __name__ == '__main__':
     argparser.add_argument('--model-dtype', default='float32',
                            help='Data type of the input. One of PyTorch\'s '
                                 'dtype strings.')
+    argparser.add_argument('--reverse-input-channels',
+                           dest='reverse_input_channels',
+                           action='store_true',
+                           help='Automatically convert HWC input into CHW')
+    argparser.add_argument('--no-reverse-input-channels',
+                           dest='reverse_input_channels', action='store_false',
+                           help='Do NOT switch HWC input to CWH')
+    argparser.set_defaults(reverse_input_channels=False)
     argparser.add_argument('--output', type=pathlib.Path, required=True,
                            help='Name of the output Myriad blob file.')
     argparser.add_argument('--nshaves', type=int, default=4,
@@ -97,9 +105,12 @@ if __name__ == '__main__':
         onnx.checker.check_model(onnx_model)
         onnx.save(onnx_model, onnx_name)
         print('Optimizing ...')
-        result = subprocess.run([
+        cmd = [
             'mo', '--framework', 'onnx', '--input_model', onnx_name,
-            '--compress_to_fp16', '--output_dir', workdir_name])
+            '--compress_to_fp16', '--output_dir', workdir_name]
+        if args.reverse_input_channels:
+            cmd.append('--reverse_input_channels')
+        result = subprocess.run(cmd)
         if result.returncode != 0:
             print('Failed.')
             sys.exit(result.returncode)
