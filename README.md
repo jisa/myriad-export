@@ -62,7 +62,7 @@ Most likely candidates for changing are:
   `--reverse-input-channels|--no-reverse-input-channels` is important. PyTorch
 typically uses CHW tensors, whereas everything else, such as Luxonis cameras,
 uses HWC. Reversing input channels helps you to feed correct data to a CHW
-model. The toool is **not** reversing by default.  
+model. The tool is **not** reversing by default.  
   `--input-type`, in case your inputs to the final blob model are not unsigned
 8-bit integers.  
 [One of](https://github.com/openvinotoolkit/openvino/blob/cf2c7da568934870c29acc961a4498ff9cbd8d9c/tools/compile_tool/main.cpp#L175-L186)
