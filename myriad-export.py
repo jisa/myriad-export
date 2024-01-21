@@ -28,6 +28,12 @@ if __name__ == '__main__':
         'U8', 'U16', 'U32', 'U64', 'I8', 'I16', 'I32', 'I64',
         'BF16', 'FP16', 'FP32', 'BOOL'],
                            default='U8', help='Input data type.')
+    argparser.add_argument('--mean', type=json.loads,
+                           help='Automatically center the input data. Mean '
+                           'adjustment happens before rescaling.')
+    argparser.add_argument('--scale', type=json.loads,
+                           help='Automatically scale the input data. Scaling '
+                           'happens after mean adjustment.')
     argparser.add_argument('--model-dtype', default='float32',
                            help='Data type of the input. One of PyTorch\'s '
                                 'dtype strings.')
@@ -110,6 +116,12 @@ if __name__ == '__main__':
             '--compress_to_fp16', '--output_dir', workdir_name]
         if args.reverse_input_channels:
             cmd.append('--reverse_input_channels')
+        if args.mean is not None:
+            cmd.append('--mean_values')
+            cmd.append(f'{args.mean}')
+        if args.scale is not None:
+            cmd.append('--scale_values')
+            cmd.append(f'{args.scale}')
         result = subprocess.run(cmd)
         if result.returncode != 0:
             print('Failed.')

@@ -69,6 +69,9 @@ model. The toool is **not** reversing by default.
 `U8`, `U16`, `U32`, `U64`, `I8`, `I16`, `I32`, `I64`, `BF16`, `FP16`, `FP32`,
 `BOOL`. On a Luxonis camera with a Myriad chip, the inputs are typically 8-bit
 images, so the default `U8` value should work.  
+  `--mean '[123.675, 116.28, 103.53]'` automatically shifts the input data.  
+  `--scale '[58.4, 57.12, 57.38]` automatically rescales input data. Mean
+adjustment happens before scale adjustment.  
   `--model-dtype` for casting model parameters before exporting to ONNX. One of
 dtype names from PyTorch, such as `float16`, `float32`, `half`, etc. Defaults to
 `float32`. In practice, blob compiler does not support float64 and is less
