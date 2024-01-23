@@ -21,6 +21,9 @@ if __name__ == '__main__':
                                  'know what you are doing.')
     argparser.add_argument('--input', type=pathlib.Path, required=True,
                            help='Input PyTorch model.')
+    argparser.add_argument('--model-key', default='model',
+                           help='When loading a dict with a model, name the '
+                                'key for the model.')
     argparser.add_argument('--input-shape', type=json.loads,
                            help='Shape of the input tensor. E.g. '
                                 '[1, 3, 240, 320].')
@@ -68,12 +71,19 @@ if __name__ == '__main__':
         print('Loading PyTorch model ...')
         model = torch.load(args.input, map_location='cpu')
         try:
-            model = model['model']
-        except TypeError:
+            model = model[args.model_key]
+        except KeyError:
             # Maybe we loaded a model itself and not a dict with a model?
             pass
         dtype = getattr(torch, args.model_dtype)
-        model = model.eval().to(dtype=dtype)
+        try:
+            model = model.eval().to(dtype=dtype)
+        except AttributeError:
+            if isinstance(model, dict):
+                print('Loaded a dict with the following keys: ' +
+                      f'{list(model.keys())}')
+            print('Could not load the model.\nFailed.')
+            sys.exit(-1)
         dummy_input = torch.rand(args.input_shape, dtype=dtype)
 
         model_name = args.input.with_suffix('').name

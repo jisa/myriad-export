@@ -72,6 +72,8 @@ images, so the default `U8` value should work.
   `--mean '[123.675, 116.28, 103.53]'` automatically shifts the input data.  
   `--scale '[58.4, 57.12, 57.38]` automatically rescales input data. Mean
 adjustment happens before scale adjustment.  
+  `--model-key` specifies, if loading a model from a dict, which key to use to
+find the model entry. Defaults to `"model"`.  
   `--model-dtype` for casting model parameters before exporting to ONNX. One of
 dtype names from PyTorch, such as `float16`, `float32`, `half`, etc. Defaults to
 `float32`. In practice, blob compiler does not support float64 and is less
