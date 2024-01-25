@@ -72,7 +72,7 @@ if __name__ == '__main__':
         model = torch.load(args.input, map_location='cpu')
         try:
             model = model[args.model_key]
-        except KeyError:
+        except (TypeError, KeyError):
             # Maybe we loaded a model itself and not a dict with a model?
             pass
         dtype = getattr(torch, args.model_dtype)
