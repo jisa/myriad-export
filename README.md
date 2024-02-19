@@ -74,6 +74,8 @@ model. The tool is **not** reversing by default.
 `U8`, `U16`, `U32`, `U64`, `I8`, `I16`, `I32`, `I64`, `BF16`, `FP16`, `FP32`,
 `BOOL`. On a Luxonis camera with a Myriad chip, the inputs are typically 8-bit
 images, so the default `U8` value should work.  
+  `--output-type`, in case you want other than FP16 outputs. Same options as
+with `--input-type`.  
   `--mean '[123.675, 116.28, 103.53]'` automatically shifts the input data.  
   `--scale '[58.4, 57.12, 57.38]` automatically rescales input data. Mean
 adjustment happens before scale adjustment.  
