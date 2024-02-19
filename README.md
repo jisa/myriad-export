@@ -1,4 +1,4 @@
-# Convert a PyTorch model to a Myriad blob
+# Convert a PyTorch or an ONNX model to a Myriad blob
 
 ## Motivation
 
@@ -14,6 +14,9 @@ Intel's Myriad VPUs in 2023
 Therefore this docker-based tooling running old OpenVino and old Python in an
 old Ubuntu. Given a PyTorch model, it produces a model in blob format for
 MyriadX VPU.
+
+If you have an ONNX model already, this tool can also support you by skipping
+the PyTorch-to-ONNX conversion step and directly converting your ONNX model.
 
 You may want to use [Blobconverter](https://blobconverter.luxonis.com/) by
 Luxonis instead of this tool. You still need to figure out how to convert your
@@ -46,12 +49,14 @@ $ cd ${DIRECTORY_WITH_MY_MODEL}
 
 # Model paths must be relative to the current directory.
 $ ${SOME_PATH}/docker-run.sh \
-        --input ${PYTORCH_INPUT_MODEL} \
+        --input ${PYTORCH_INPUT_MODEL}|${ONNX_INPUT_MODEL} \
         --input-shape '[1, 3, 240, 320]' \
         --output ${BLOB_OUTPUT_MODEL}
 ```
 
 Change the input shape to match your use case. Note the quotes.
+
+ONNX models need .onnx file extension.
 
 There are other flags you may want to set:
 

@@ -68,52 +68,55 @@ if __name__ == '__main__':
     with tempfile.TemporaryDirectory() as workdir_name:
         workdir = pathlib.Path(workdir_name)
 
-        print('Loading PyTorch model ...')
-        model = torch.load(args.input, map_location='cpu')
-        try:
-            model = model[args.model_key]
-        except (TypeError, KeyError):
-            # Maybe we loaded a model itself and not a dict with a model?
-            pass
-        dtype = getattr(torch, args.model_dtype)
-        try:
-            model = model.eval().to(dtype=dtype)
-        except AttributeError:
-            if isinstance(model, dict):
-                print('Loaded a dict with the following keys: ' +
-                      f'{list(model.keys())}')
-            print('Could not load the model.\nFailed.')
-            sys.exit(-1)
-        dummy_input = torch.rand(args.input_shape, dtype=dtype)
+        if args.input.suffix == '.onnx':
+            onnx_name = args.input
+        else:
+            print('Loading PyTorch model ...')
+            model = torch.load(args.input, map_location='cpu')
+            try:
+                model = model[args.model_key]
+            except (TypeError, KeyError):
+                # Maybe we loaded a model itself and not a dict with a model?
+                pass
+            dtype = getattr(torch, args.model_dtype)
+            try:
+                model = model.eval().to(dtype=dtype)
+            except AttributeError:
+                if isinstance(model, dict):
+                    print('Loaded a dict with the following keys: ' +
+                          f'{list(model.keys())}')
+                print('Could not load the model.\nFailed.')
+                sys.exit(-1)
+            dummy_input = torch.rand(args.input_shape, dtype=dtype)
 
-        model_name = args.input.with_suffix('').name
-        onnx_name = (workdir / model_name).with_suffix('.onnx')
+            model_name = args.input.with_suffix('').name
+            onnx_name = (workdir / model_name).with_suffix('.onnx')
 
-        # https://pytorch.org/tutorials/advanced/super_resolution_with_onnxruntime.html
-        print('Exporting to ONNX ...')
-        if args.new_export:
-            # As of 2024/01, Torch DynamoExport supports only opset=18 and does
-            # not have a way to restrict to opset=12. This typically leads to
-            # failures in later stages.
-            export_options = torch.onnx.ExportOptions(
-                    dynamic_shapes=False,
-                    diagnostic_options=torch.onnx.DiagnosticOptions())
-            export = torch.onnx.dynamo_export(
-                    model, dummy_input, export_options=export_options)
-            with open(onnx_name, 'wb') as onnx_file:
-                export.save(onnx_file)
-        else:  # Old export method. Recommended.
-            _ov_model = torch.onnx.export(
-                    model,
-                    dummy_input,
-                    f=onnx_name,
-                    export_params=True,
-                    opset_version=args.opset,
-                    do_constant_folding=True,
-                    input_names=['input'],
-                    output_names=['output'])
+            # https://pytorch.org/tutorials/advanced/super_resolution_with_onnxruntime.html
+            print('Exporting to ONNX ...')
+            if args.new_export:
+                # As of 2024/01, Torch DynamoExport supports only opset=18 and does
+                # not have a way to restrict to opset=12. This typically leads to
+                # failures in later stages.
+                export_options = torch.onnx.ExportOptions(
+                        dynamic_shapes=False,
+                        diagnostic_options=torch.onnx.DiagnosticOptions())
+                export = torch.onnx.dynamo_export(
+                        model, dummy_input, export_options=export_options)
+                with open(onnx_name, 'wb') as onnx_file:
+                    export.save(onnx_file)
+            else:  # Old export method. Recommended.
+                _ov_model = torch.onnx.export(
+                        model,
+                        dummy_input,
+                        f=onnx_name,
+                        export_params=True,
+                        opset_version=args.opset,
+                        do_constant_folding=True,
+                        input_names=['input'],
+                        output_names=['output'])
 
-        print('Loading the exported ONNX model ...')
+        print('Loading ONNX model ...')
         onnx_model = onnx.load(onnx_name)
         print('Simplifying ...')
         onnx_model, _ = onnxsim.simplify(onnx_model)
