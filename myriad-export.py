@@ -29,11 +29,11 @@ if __name__ == '__main__':
                                 '[1, 3, 240, 320].')
     argparser.add_argument('--input-type', choices=[
         'U8', 'U16', 'U32', 'U64', 'I8', 'I16', 'I32', 'I64',
-        'BF16', 'FP16', 'FP32', 'BOOL'],
+        'BF16', 'FP16', 'FP32', 'BOOL', 'ONNX'],
                            default='U8', help='Input data type.')
     argparser.add_argument('--output-type', choices=[
         'U8', 'U16', 'U32', 'U64', 'I8', 'I16', 'I32', 'I64',
-        'BF16', 'FP16', 'FP32', 'BOOL'],
+        'BF16', 'FP16', 'FP32', 'BOOL', 'ONNX'],
                            default='FP16', help='Input data type.')
     argparser.add_argument('--mean', type=json.loads,
                            help='Automatically center the input data. Mean '
@@ -167,8 +167,11 @@ if __name__ == '__main__':
                '-m', f'{workdir / onnx_name.with_suffix(".xml").name}',
                '-o', args.output,
                '-d', 'MYRIAD',
-               '-ip', args.input_type,
                '-c', CONFIG_NAME]
+        if args.input_type != 'ONNX':
+            cmd += ['-ip', args.input_type]
+        if args.output_type != 'ONNX':
+            cmd += ['-op', args.output_type]
         result = subprocess.run(
             cmd,
             env = envs)
