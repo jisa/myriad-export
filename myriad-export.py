@@ -152,17 +152,6 @@ if __name__ == '__main__':
                     f'MYRIAD_NUMBER_OF_CMX_SLICES {args.nslices}\n' +
                     f'MYRIAD_THROUGHPUT_STREAMS {args.nstreams}\n' +
                     'MYRIAD_ENABLE_MX_BOOT NO\n')
-        envs = {'InferenceEngine_DIR': '/opt/intel/openvino/runtime/cmake',
-                'OpenVINO_DIR': '/opt/intel/openvino/runtime/cmake',
-                'INTEL_OPENVINO_DIR': '/opt/intel/openvino',
-                'PYTHONPATH': '/opt/intel/openvino/python/python3.8:'
-                              '/opt/intel/openvino/python/python3',
-                'LD_LIBRARY_PATH':
-                    '/opt/intel/openvino/tools/compile_tool:'
-                    '/opt/intel/openvino/runtime/3rdparty/hddl/lib:'
-                    '/opt/intel/openvino/runtime/lib/intel64',
-                'ngraph_DIR': '/opt/intel/openvino/runtime/cmake',
-                'HDDL_INSTALL_DIR': '/opt/intel/openvino/runtime/3rdparty/hddl'}
         cmd = ['/opt/intel/openvino/tools/compile_tool/compile_tool',
                '-m', f'{workdir / onnx_name.with_suffix(".xml").name}',
                '-o', args.output,
@@ -173,7 +162,6 @@ if __name__ == '__main__':
         if args.output_type != 'ONNX':
             cmd += ['-op', args.output_type]
         result = subprocess.run(
-            cmd,
-            env = envs)
+            cmd)
         print('Done.' if result.returncode == 0 else 'Failed.')
         sys.exit(result.returncode)
