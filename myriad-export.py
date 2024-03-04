@@ -35,10 +35,10 @@ if __name__ == '__main__':
         'U8', 'U16', 'U32', 'U64', 'I8', 'I16', 'I32', 'I64',
         'BF16', 'FP16', 'FP32', 'BOOL', 'ONNX'],
                            default='FP16', help='Input data type.')
-    argparser.add_argument('--mean', type=json.loads,
+    argparser.add_argument('--mean', type=str,
                            help='Automatically center the input data. Mean '
                            'adjustment happens before rescaling.')
-    argparser.add_argument('--scale', type=json.loads,
+    argparser.add_argument('--scale', type=str,
                            help='Automatically scale the input data. Scaling '
                            'happens after mean adjustment.')
     argparser.add_argument('--model-dtype', default='float32',

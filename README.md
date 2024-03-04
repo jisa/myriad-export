@@ -72,14 +72,15 @@ model. The tool is **not** reversing by default.
 8-bit integers.  
 [One of](https://github.com/openvinotoolkit/openvino/blob/cf2c7da568934870c29acc961a4498ff9cbd8d9c/tools/compile_tool/main.cpp#L175-L186)
 `U8`, `U16`, `U32`, `U64`, `I8`, `I16`, `I32`, `I64`, `BF16`, `FP16`, `FP32`,
-`BOOL` or `ONNX`. On a Luxonis camera with a Myriad chip, the inputs are typically 8-bit
-images, so the default `U8` value should work. Use `ONNX` to use the input type
-information from the exported model.  
+`BOOL` or `ONNX`. On a Luxonis camera with a Myriad chip, the inputs are
+typically 8-bit images, so the default `U8` value should work. Use `ONNX` to use
+the input type information from the exported model.  
   `--output-type`, in case you want other than FP16 outputs. Same options as
 with `--input-type`.  
-  `--mean '[123.675, 116.28, 103.53]'` automatically shifts the input data.  
-  `--scale '[58.4, 57.12, 57.38]` automatically rescales input data. Mean
-adjustment happens before scale adjustment.  
+  `--mean 'input_layer_name=[123.675, 116.28, 103.53]'` automatically shifts the
+input data.  
+  `--scale 'input_layer_name=[58.4, 57.12, 57.38]` automatically rescales input
+data. Mean adjustment happens before scale adjustment.  
   `--model-key` specifies, if loading a model from a dict, which key to use to
 find the model entry. Defaults to `"model"`.  
   `--model-dtype` for casting model parameters before exporting to ONNX. One of
